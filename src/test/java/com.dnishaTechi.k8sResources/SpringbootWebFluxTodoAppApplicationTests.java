@@ -24,5 +24,9 @@ class SpringbootWebFluxTodoAppApplicationTests {
 				.expectNextCount(1)
 				.verifyComplete();
 	}
+	@Test
+	public void test(){
+		System.out.println(System.getProperty("user.home") + "/.kube/config");
+	}
 
 }

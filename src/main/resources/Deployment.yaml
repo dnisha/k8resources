@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: k8-resources-java
+  labels:
+    app: k8-resources-java
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: k8-resources-java
+  template:
+    metadata:
+      labels:
+        app: k8-resources-java
+    spec:
+      containers:
+        - name: k8-resources-java
+          image: dash04/k8resource-java:v5
+          env:
+            - name: API_URL
+              value: "http://10.96.11.35:8080"
+          ports:
+            - containerPort: 8084
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: k8-resources-java-app-service
+spec:
+  selector:
+    app: k8-resources-java
+  ports:
+    - protocol: TCP
+      port: 8084
+      targetPort: 8084
+      nodePort: 31290
+  type: NodePort
