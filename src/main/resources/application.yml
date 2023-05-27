@@ -1,8 +1,8 @@
 server:
   port: 8084
 
-#api:
-#  url: http://127.0.0.1:49835
-
 api:
-  url: ${API_URL}
+  url: http://127.0.0.1:8080
+
+#api:
+#  url: ${API_URL}

@@ -1,10 +1,12 @@
 package com.dnishaTechi.k8sResources.controller;
 
 import com.dnishaTechi.k8sResources.config.ApiConfig;
-import com.dnishaTechi.k8sResources.properties.ApiProperties;
+import com.dnishaTechi.k8sResources.factory.ResourceFactory;
+import com.dnishaTechi.k8sResources.model.FinalResponse;
+import com.dnishaTechi.k8sResources.model.PodResponse;
+import com.dnishaTechi.k8sResources.model.SvcResponse;
 import lombok.AllArgsConstructor;
 import lombok.extern.java.Log;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -26,19 +28,32 @@ public class K8ResourcesController {
     }
 
     @GetMapping("/getPods")
-    public Mono<String> getPods()  {
+    public Mono<PodResponse> getPods()  {
         WebClient webClient = WebClient.create(apiConfig.contructApi()+"/getPods"); // replace with the URL of the API endpoint you want to access
         return webClient.get()
                 .retrieve()
-                .bodyToMono(String.class)
+                .bodyToMono(PodResponse.class)
                 .log();
     }
     @GetMapping("/getServices")
-    public Mono<String> getService()  {
+    public Mono<SvcResponse> getService()  {
         WebClient webClient = WebClient.create(apiConfig.contructApi()+"/getServices"); // replace with the URL of the API endpoint you want to access
         return webClient.get()
                 .retrieve()
-                .bodyToMono(String.class)
+                .bodyToMono(SvcResponse.class)
+                .log();
+    }
+    @GetMapping("/getResource")
+    public Mono<FinalResponse> getResource()  {
+        WebClient webForPod = WebClient.create(apiConfig.contructApi()+"/getPods"); // replace with the URL of the API endpoint you want to access
+        WebClient webForSvc = WebClient.create(apiConfig.contructApi()+"/getServices");
+        return webForPod.get()
+                .retrieve()
+                .bodyToMono(PodResponse.class)
+                .zipWith(webForSvc.get()
+                        .retrieve()
+                        .bodyToMono(SvcResponse.class))
+                .map(tuple2 -> ResourceFactory.create(tuple2))
                 .log();
     }
 }
